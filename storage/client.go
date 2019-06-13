@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+	"github.com/kebe7jun/ropee/metrics"
 	"github.com/prometheus/prometheus/prompb"
 	"io"
 	"io/ioutil"
@@ -70,8 +71,10 @@ func (c *Client) Write(req *prompb.WriteRequest) error {
 	}
 	err := c.splunkHECEvents(events)
 	if err != nil {
+		metrics.SplunkEventsWroteFailed.Add(float64(len(events)))
 		return err
 	}
+	metrics.SplunkEventsWrote.Add(float64(len(events)))
 	return nil
 }
 
@@ -84,11 +87,13 @@ func (c *Client) Read(req *prompb.ReadRequest) (*prompb.ReadResponse, error) {
 			return nil, err
 		}
 		level.Debug(c.log).Log("rendered_search", search, "earliest", q.StartTimestampMs, "latest", q.EndTimestampMs)
+		timeStarted := time.Now()
 		res, err := c.runSearchWithResult(search, q.StartTimestampMs, q.EndTimestampMs)
 		if err != nil {
 			level.Error(c.log).Log("msg", err)
 			return nil, err
 		}
+		metrics.SplunkJobLatency.Observe(float64(time.Now().Sub(timeStarted) / time.Second))
 		var resPreview map[string][]map[string]string
 		json.Unmarshal(res, &resPreview)
 		if _, ok := resPreview["fields"]; !ok {

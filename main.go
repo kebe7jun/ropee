@@ -6,8 +6,10 @@ import (
 	"github.com/go-kit/kit/log/level"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/snappy"
+	"github.com/kebe7jun/ropee/metrics"
 	"github.com/kebe7jun/ropee/storage"
 	"github.com/lestrrat/go-file-rotatelogs"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/prometheus/prompb"
 	"io/ioutil"
 	"net/http"
@@ -20,7 +22,7 @@ type Config struct {
 	SplunkUsername, SplunkPassword string
 	SplunkMetricsIndex             string
 	SplunkMetricsSourceType        string
-	SplunkHECURL                  string
+	SplunkHECURL                   string
 	SplunkHECToken                 string
 	TimeoutSeconds                 int
 	ListenAddr                     string
@@ -32,7 +34,7 @@ var config Config
 
 func loadRotateWriter(logPath, fileName string) *rotatelogs.RotateLogs {
 	writer, _ := rotatelogs.New(
-		"./"+fileName+".%Y%m%d%H%M",
+		path.Join(logPath, fileName)+".%Y%m%d%H%M",
 		rotatelogs.WithLinkName(path.Join(logPath, fileName)), // 生成软链，指向最新日志文件
 		rotatelogs.WithMaxAge(7*24*time.Hour),                 // 文件最大保存时间
 		rotatelogs.WithRotationTime(48*time.Hour),             // 日志切割时间间隔
@@ -80,6 +82,7 @@ func main() {
 		time.Second*time.Duration(config.TimeoutSeconds),
 		l,
 	)
+	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/read", func(w http.ResponseWriter, r *http.Request) {
 		compressed, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -94,7 +97,7 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
+		metrics.ReadRequestCounter.Add(1)
 		var req prompb.ReadRequest
 		if err := proto.Unmarshal(reqBuf, &req); err != nil {
 			level.Error(l).Log("msg", "Unmarshal error", "err", err.Error())
@@ -137,7 +140,7 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
+		metrics.WriteRequestCounter.Add(1)
 		var req prompb.WriteRequest
 		if err := proto.Unmarshal(reqBuf, &req); err != nil {
 			level.Error(l).Log("msg", "Unmarshal error", "err", err.Error())
