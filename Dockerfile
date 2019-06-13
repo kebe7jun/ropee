@@ -16,8 +16,7 @@ ADD . .
 
 ARG build_tags
 
-RUN cd ./cmd/ropee/ && \
-    if [ ! -n $build_tags ]; then go build -tags $build_tags -o ../../dist/ropee ; else go build -o ../../dist/ropee ; fi
+RUN if [ ! -n $build_tags ]; then go build -tags $build_tags -o ./dist/ropee ; else go build -o ./dist/ropee ; fi
 
 FROM alpine:3.8
 
