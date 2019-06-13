@@ -23,5 +23,5 @@ FROM alpine:3.8
 WORKDIR /app
 
 COPY --from=0 /app/dist/ropee /app
-
+# todo add entrypoint
 CMD /app/ropee
