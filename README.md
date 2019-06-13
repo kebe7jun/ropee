@@ -89,5 +89,5 @@ remote_write:
 
 ```
 go mod download
-go run cmd/ropee/main.go
+go run main.go
 ```
