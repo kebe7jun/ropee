@@ -5,7 +5,7 @@ With this remote storage adapter, Prometheus can use Splunk as a long-term store
 
 ## Docker instructions
 
-A docker image for the splunk storage adapter is available on Docker Hub at kebe7jun/ropee.
+A docker image for the splunk storage adapter is available on Docker Hub at kebe/ropee.
 
 ### Command args
 ```
