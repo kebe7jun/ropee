@@ -152,6 +152,10 @@ func main() {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		w.WriteHeader(200)
+		if _, err := w.Write([]byte("ok")); err != nil {
+			level.Error(l).Log("action", "write", "err", err)
+		}
 	})
 	if err := http.ListenAndServe(config.ListenAddr, nil); err != nil {
 		level.Error(l).Log("action", "serve", "err", err)
