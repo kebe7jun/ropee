@@ -13,7 +13,7 @@ A docker image for the splunk storage adapter is available on Docker Hub at kebe
 docker run -d --name ropee -p 9970:9970 \
     -e LISTEN_ADDR=0.0.0.0:9970 \
     -e SPLUNK_USER=admin \
-    -e SPLUNK_PASSWORD=admin123 \
+    -e SPLUNK_PASSWORD=password \
     -e SPLUNK_METRICS_INDEX=metrics \
     -e SPLUNK_METRICS_SOURCETYPE=DaoCloud_promu_metrics \
     -e SPLUNK_HEC_TOKEN=asddsa1-12312312-3123-2 \
