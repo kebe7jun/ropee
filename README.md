@@ -9,11 +9,12 @@ A docker image for the splunk storage adapter is available on Docker Hub at kebe
 
 ### Start with docker
 
-```
-docker run -d --name ropee -p 9970:9970 \
+```console
+# You must edit the following command for your env.
+$ docker run -d --name ropee -p 9970:9970 \
     -e LISTEN_ADDR=0.0.0.0:9970 \
-    -e SPLUNK_USER=admin \
-    -e SPLUNK_PASSWORD=password \
+    -e SPLUNK_USER= \
+    -e SPLUNK_PASSWORD= \
     -e SPLUNK_METRICS_INDEX=metrics \
     -e SPLUNK_METRICS_SOURCETYPE=DaoCloud_promu_metrics \
     -e SPLUNK_HEC_TOKEN=asddsa1-12312312-3123-2 \
@@ -95,7 +96,6 @@ Please follow splunk docs.
 ...
 remote_read:
   - url: "http://127.0.0.1:9970/read"
-    read_recent: true
 
 remote_write:
   - url: "http://127.0.0.1:9970/write"
