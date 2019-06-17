@@ -13,6 +13,7 @@ import (
 	"github.com/prometheus/prometheus/prompb"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 	"time"
 )
@@ -44,7 +45,12 @@ func loadRotateWriter(logPath, fileName string) *rotatelogs.RotateLogs {
 
 func loadLogger() log.Logger {
 	var logger log.Logger
-	logger = log.NewLogfmtLogger(log.NewSyncWriter(loadRotateWriter(config.LogFilePath, "ropee.log")))
+	if config.LogFilePath == "-" {
+		logger = log.NewLogfmtLogger(os.Stdout)
+	} else {
+		logger = log.NewLogfmtLogger(log.NewSyncWriter(loadRotateWriter(config.LogFilePath, "ropee.log")))
+	}
+
 	if config.Debug {
 		logger = level.NewFilter(logger, level.AllowDebug())
 	} else {
@@ -157,6 +163,7 @@ func main() {
 			level.Error(l).Log("action", "write", "err", err)
 		}
 	})
+	level.Info(l).Log("msg", "starting server...", "listen", config.ListenAddr)
 	if err := http.ListenAndServe(config.ListenAddr, nil); err != nil {
 		level.Error(l).Log("action", "serve", "err", err)
 	}

@@ -20,8 +20,9 @@ RUN if [ ! -n $build_tags ]; then go build -tags $build_tags -o ./dist/ropee ; e
 
 FROM alpine:3.8
 
-WORKDIR /app
+COPY --from=0 /app/dist/ropee /usr/local/bin
+COPY entrypoint.sh /usr/local/bin
 
-COPY --from=0 /app/dist/ropee /app
-# todo add entrypoint
-CMD /app/ropee
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT /usr/local/bin/entrypoint.sh
