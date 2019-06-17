@@ -7,6 +7,23 @@ With this remote storage adapter, Prometheus can use Splunk as a long-term store
 
 A docker image for the splunk storage adapter is available on Docker Hub at kebe/ropee.
 
+### Start with docker
+
+```
+docker run -d --name ropee -p 9970:9970 \
+    -e LISTEN_ADDR=0.0.0.0:9970 \
+    -e SPLUNK_USER=admin \
+    -e SPLUNK_PASSWORD=admin123 \
+    -e SPLUNK_METRICS_INDEX=metrics \
+    -e SPLUNK_METRICS_SOURCETYPE=DaoCloud_promu_metrics \
+    -e SPLUNK_HEC_TOKEN=asddsa1-12312312-3123-2 \
+    -e SPLUNK_HEC_URL=https://192.168.1.1:8088 \
+    -e SPLUNK_URL=https://192.168.1.1:8089 \
+    -e TIMEOUT=60 \
+    -e DEBUG=0 \
+    kebe/ropee:latest
+```
+
 ### Command args
 ```
 Usage of ./ropee:
