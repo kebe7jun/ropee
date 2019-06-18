@@ -20,7 +20,6 @@ import (
 
 type Config struct {
 	SplunkUrl                      string
-	SplunkUsername, SplunkPassword string
 	SplunkMetricsIndex             string
 	SplunkMetricsSourceType        string
 	SplunkHECURL                   string
@@ -63,8 +62,6 @@ func loadLogger() log.Logger {
 func init() {
 	// init config
 	flag.StringVar(&config.SplunkUrl, "splunk-url", "https://127.0.0.1:8089", "Splunk Manage Url.")
-	flag.StringVar(&config.SplunkUsername, "splunk-user", "", "Splunk Manage Username.")
-	flag.StringVar(&config.SplunkPassword, "splunk-password", "", "Splunk Manage Password.")
 	flag.StringVar(&config.SplunkHECURL, "splunk-hec-url", "https://127.0.0.1:8088", "Splunk Http event collector url.")
 	flag.StringVar(&config.SplunkHECToken, "splunk-hec-token", "", "Splunk Http event collector token.")
 	flag.StringVar(&config.ListenAddr, "listen-addr", "127.0.0.1:9970", "Sopee listen addr.")
@@ -78,16 +75,6 @@ func init() {
 
 func main() {
 	l := loadLogger()
-	client, _ := storage.NewClient(
-		config.SplunkUrl,
-		config.SplunkUsername,
-		config.SplunkPassword,
-		config.SplunkMetricsIndex,
-		config.SplunkMetricsSourceType,
-		config.SplunkHECURL, config.SplunkHECToken,
-		time.Second*time.Duration(config.TimeoutSeconds),
-		l,
-	)
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/read", func(w http.ResponseWriter, r *http.Request) {
 		compressed, err := ioutil.ReadAll(r.Body)
@@ -110,11 +97,7 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		user, pass, ok := r.BasicAuth()
-		if !ok {
-			user = config.SplunkUsername
-			pass = config.SplunkPassword
-		}
+		user, pass, _ := r.BasicAuth()
 		readClient, _ := storage.NewClient(
 			config.SplunkUrl,
 			user,
@@ -147,6 +130,16 @@ func main() {
 			return
 		}
 	})
+	writeClient, _ := storage.NewClient(
+		config.SplunkUrl,
+		"",
+		"",
+		config.SplunkMetricsIndex,
+		config.SplunkMetricsSourceType,
+		config.SplunkHECURL, config.SplunkHECToken,
+		time.Second*time.Duration(config.TimeoutSeconds),
+		l,
+	)
 	http.HandleFunc("/write", func(w http.ResponseWriter, r *http.Request) {
 		compressed, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -168,7 +161,7 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		err = client.Write(&req)
+		err = writeClient.Write(&req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

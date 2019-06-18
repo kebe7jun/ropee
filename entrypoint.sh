@@ -2,7 +2,7 @@
 
 CMD="/usr/local/bin/ropee -log-file-path - "
 
-args="splunk-url splunk-user splunk-password splunk-hec-url splunk-hec-token listen-addr splunk-metrics-index splunk-metrics-sourcetype timeout debug"
+args="splunk-url splunk-hec-url splunk-hec-token listen-addr splunk-metrics-index splunk-metrics-sourcetype timeout debug"
 
 for i in $args
 do
