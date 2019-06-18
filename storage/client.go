@@ -62,6 +62,7 @@ func NewClient(
 	}, nil
 }
 
+
 func (c *Client) Write(req *prompb.WriteRequest) error {
 	events := make([]SplunkMetricEvent, 0)
 	for _, series := range req.Timeseries {

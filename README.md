@@ -13,8 +13,6 @@ A docker image for the splunk storage adapter is available on Docker Hub at kebe
 # You must edit the following command for your env.
 $ docker run -d --name ropee -p 9970:9970 \
     -e LISTEN_ADDR=0.0.0.0:9970 \
-    -e SPLUNK_USER= \
-    -e SPLUNK_PASSWORD= \
     -e SPLUNK_METRICS_INDEX=metrics \
     -e SPLUNK_METRICS_SOURCETYPE=DaoCloud_promu_metrics \
     -e SPLUNK_HEC_TOKEN=asddsa1-12312312-3123-2 \
@@ -42,14 +40,10 @@ Usage of ./ropee:
     	Index name. (default "*")
   -splunk-metrics-sourcetype string
     	The prometheus sourcetype name. (default "DaoCloud_promu_metrics")
-  -splunk-password string
-    	Splunk Manage Password.
   -splunk-url string
     	Splunk Manage Url. (default "https://127.0.0.1:8089")
-  -splunk-user string
-    	Splunk Manage Username.
   -timeout int
-    	API timeout. (default 60)
+    	API timeout seconds. (default 60)
 ```
 
 ## Configuring Splunk
@@ -96,6 +90,7 @@ Please follow splunk docs.
 ...
 remote_read:
   - url: "http://127.0.0.1:9970/read"
+# for remote read, you should set the basic auth which belongs splunk's user.
 
 remote_write:
   - url: "http://127.0.0.1:9970/write"

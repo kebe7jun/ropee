@@ -71,7 +71,7 @@ func init() {
 	flag.StringVar(&config.SplunkMetricsIndex, "splunk-metrics-index", "*", "Index name.")
 	flag.StringVar(&config.SplunkMetricsSourceType, "splunk-metrics-sourcetype", "DaoCloud_promu_metrics", "The prometheus sourcetype name.")
 	flag.StringVar(&config.LogFilePath, "log-file-path", "/var/log", "Log files path.")
-	flag.IntVar(&config.TimeoutSeconds, "timeout", 60, "API timeout.")
+	flag.IntVar(&config.TimeoutSeconds, "timeout", 60, "API timeout seconds.")
 	flag.BoolVar(&config.Debug, "debug", false, "Debug mode.")
 	flag.Parse()
 }
@@ -110,7 +110,22 @@ func main() {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		resp, err := client.Read(&req)
+		user, pass, ok := r.BasicAuth()
+		if !ok {
+			user = config.SplunkUsername
+			pass = config.SplunkPassword
+		}
+		readClient, _ := storage.NewClient(
+			config.SplunkUrl,
+			user,
+			pass,
+			config.SplunkMetricsIndex,
+			config.SplunkMetricsSourceType,
+			config.SplunkHECURL, config.SplunkHECToken,
+			time.Second*time.Duration(config.TimeoutSeconds),
+			l,
+		)
+		resp, err := readClient.Read(&req)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
