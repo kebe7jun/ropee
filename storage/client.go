@@ -15,7 +15,6 @@ import (
 	"net/http"
 	"net/url"
 	"path"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -62,6 +61,10 @@ func NewClient(
 	}, nil
 }
 
+type jobResultPreview struct {
+	Fields []string   `json:"fields"`
+	Rows   [][]string `json:"rows"`
+}
 
 func (c *Client) Write(req *prompb.WriteRequest) error {
 	events := make([]SplunkMetricEvent, 0)
@@ -95,22 +98,21 @@ func (c *Client) Read(req *prompb.ReadRequest) (*prompb.ReadResponse, error) {
 			return nil, err
 		}
 		metrics.SplunkJobLatency.Observe(float64(time.Now().Sub(timeStarted) / time.Second))
-		var resPreview map[string][]map[string]string
+		var resPreview jobResultPreview
 		json.Unmarshal(res, &resPreview)
-		if _, ok := resPreview["fields"]; !ok {
-			level.Error(c.log).Log("msg", "search result error from splunk")
-			return nil, err
+		if len(resPreview.Fields) == 0 {
+			break
 		}
-		results := resPreview["results"]
 		keysMap := make(map[string]*prompb.TimeSeries)
 
-		for _, result := range results {
+		for _, values := range resPreview.Rows {
 			var labelValueList []string
 			key := ""
 			l := make([]prompb.Label, 0)
 			var t time.Time
 			var value float64
-			for k, v := range result {
+			for i, v := range values {
+				k := resPreview.Fields[i]
 				if k == CommonMetricName {
 					k = "__name__"
 				}
@@ -126,9 +128,8 @@ func (c *Client) Read(req *prompb.ReadRequest) (*prompb.ReadResponse, error) {
 					Name:  k,
 					Value: v,
 				})
-				labelValueList = append(labelValueList, k+"="+v)
+				labelValueList = append(labelValueList, v)
 			}
-			sort.Strings(labelValueList)
 			key = strings.Join(labelValueList, ",")
 			if _, ok := keysMap[key]; !ok {
 				tv := make([]prompb.Sample, 0)
@@ -223,7 +224,9 @@ func (c *Client) splunkRESTRequest(method, reqPath string, params, body map[stri
 	httpReq, err := http.NewRequest(method, reqUrl, b)
 	httpReq.SetBasicAuth(c.user, c.password)
 	q := httpReq.URL.Query()
-	q.Add("output_mode", "json")
+	if _, ok := params["output_mode"]; !ok {
+		q.Add("output_mode", "json")
+	}
 	q.Add("count", "50000")
 	for k, v := range params {
 		q.Add(k, v)
@@ -337,5 +340,12 @@ func (c *Client) runSearchWithResult(search string, start, end int64) ([]byte, e
 			break
 		}
 	}
-	return c.splunkRESTRequest("GET", "/servicesNS/nobody/-/search/jobs/"+sid+"/results_preview", nil, nil)
+	return c.splunkRESTRequest(
+		"GET",
+		"/servicesNS/nobody/-/search/jobs/"+sid+"/results_preview",
+		map[string]string{
+			"output_mode": "json_rows",
+		},
+		nil,
+	)
 }
