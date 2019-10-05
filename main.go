@@ -19,15 +19,15 @@ import (
 )
 
 type Config struct {
-	SplunkUrl                      string
-	SplunkMetricsIndex             string
-	SplunkMetricsSourceType        string
-	SplunkHECURL                   string
-	SplunkHECToken                 string
-	TimeoutSeconds                 int
-	ListenAddr                     string
-	LogFilePath                    string
-	Debug                          bool
+	SplunkUrl               string
+	SplunkMetricsIndex      string
+	SplunkMetricsSourceType string
+	SplunkHECURL            string
+	SplunkHECToken          string
+	TimeoutSeconds          int
+	ListenAddr              string
+	LogFilePath             string
+	Debug                   bool
 }
 
 var config Config

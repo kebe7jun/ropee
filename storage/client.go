@@ -268,7 +268,7 @@ func (c *Client) GetMetrics() []string {
 	var result map[string][]Metric
 	json.Unmarshal(res, &result)
 	ls := make([]string, 0)
-	for l := 0; l < len(result["entry"]); l ++ {
+	for l := 0; l < len(result["entry"]); l++ {
 		ls = append(ls, result["entry"][l].Name)
 	}
 	return ls
@@ -284,7 +284,7 @@ func (c *Client) MetricLabels(metricName string) []string {
 	var result map[string][]MetricLabel
 	json.Unmarshal(res, &result)
 	ls := make([]string, 0)
-	for l := 0; l < len(result["entry"]); l ++ {
+	for l := 0; l < len(result["entry"]); l++ {
 		if result["entry"][l].Name == "source" || result["entry"][l].Name == "sourcetype" {
 			continue
 		}
@@ -307,7 +307,7 @@ func (c *Client) LabelValues(labelName string) []string {
 	var result map[string][]LabelValue
 	json.Unmarshal(res, &result)
 	ls := make([]string, 0)
-	for l := 0; l < len(result["entry"]); l ++ {
+	for l := 0; l < len(result["entry"]); l++ {
 		ls = append(ls, result["entry"][l].Name)
 	}
 	return ls
