@@ -74,8 +74,8 @@ FORMAT = metric_name::$1 ::$2 _value::$3
 WRITE_META = true
 
 [prometheus_metric_dims]
-REGEX = ([^{=]+)="([^"]*)",?
-FORMAT = $1::$2
+REGEX = ([a-zA-Z_][a-zA-Z0-9_]*)="([^"]*)"[, ]*
+FORMAT = $1::"$2"
 REPEAT_MATCH = true
 WRITE_META = true
 ```
