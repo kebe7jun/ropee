@@ -2,6 +2,12 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"path"
+	"time"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
 	"github.com/golang/protobuf/proto"
@@ -11,11 +17,6 @@ import (
 	"github.com/lestrrat/go-file-rotatelogs"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/prometheus/prompb"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path"
-	"time"
 )
 
 type Config struct {
