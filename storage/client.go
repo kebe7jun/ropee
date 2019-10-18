@@ -6,10 +6,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
-	"github.com/kebe7jun/ropee/metrics"
-	"github.com/prometheus/prometheus/prompb"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -18,6 +14,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
+	"github.com/kebe7jun/ropee/metrics"
+	"github.com/prometheus/prometheus/prompb"
 )
 
 type RemoteClient interface {

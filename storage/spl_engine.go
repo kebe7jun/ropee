@@ -2,9 +2,10 @@ package storage
 
 import (
 	"fmt"
-	"github.com/prometheus/prometheus/prompb"
 	"strconv"
 	"strings"
+
+	"github.com/prometheus/prometheus/prompb"
 )
 
 func MakeSPL(query *prompb.Query, c RemoteClient, index string) (string, error) {
