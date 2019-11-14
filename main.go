@@ -60,7 +60,7 @@ func loadLogger() log.Logger {
 	return logger
 }
 
-func init() {
+func initConfig() {
 	// init config
 	flag.StringVar(&config.SplunkUrl, "splunk-url", "https://127.0.0.1:8089", "Splunk Manage Url.")
 	flag.StringVar(&config.SplunkHECURL, "splunk-hec-url", "https://127.0.0.1:8088", "Splunk Http event collector url.")
@@ -75,6 +75,7 @@ func init() {
 }
 
 func main() {
+	initConfig()
 	l := loadLogger()
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/read", func(w http.ResponseWriter, r *http.Request) {

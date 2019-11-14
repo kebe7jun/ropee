@@ -28,11 +28,15 @@ type RemoteClient interface {
 	LabelValues(string) []string
 }
 
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 type Client struct {
 	url              string
 	user             string
 	password         string
-	client           *http.Client
+	client           HTTPClient
 	timeout          time.Duration
 	index            string
 	hecUrl, hecToken string

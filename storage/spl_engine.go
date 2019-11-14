@@ -63,6 +63,9 @@ func TimeSeriesToPromMetrics(series prompb.TimeSeries) []SplunkMetricEvent {
 		}
 		labels = append(labels, label.Name+"="+strconv.Quote(label.Value))
 	}
+	if metricName == "" {
+		return nil
+	}
 	mergedKey := metricName + "{" + strings.Join(labels, ",") + "}"
 	for _, sample := range series.Samples {
 		valueTime := strconv.FormatFloat(sample.Value, 'f', -1, 64)
