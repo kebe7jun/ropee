@@ -18,12 +18,12 @@ func (c *rClient) MetricLabels(string) []string {
 
 func TestMakeSPL(t *testing.T) {
 	cases := []struct {
-		name    string
-		q       prompb.Query
-		cli     rClient
-		index   string
-		wantRes string
-		wantErr error
+		name     string
+		q        prompb.Query
+		cli      rClient
+		index    string
+		wannaRes string
+		wannaErr error
 	}{
 		{
 			"metric equals",
@@ -182,8 +182,8 @@ func TestMakeSPL(t *testing.T) {
 	for i, c := range cases {
 		t.Run(fmt.Sprintf("test-%d-%s", i, c.name), func(t *testing.T) {
 			res, err := MakeSPL(&c.q, &c.cli, c.index)
-			if res != c.wantRes || (err != nil && err.Error() != c.wantErr.Error()) {
-				t.Fatalf("res: %s, %v, want: %s, %v", res, err, c.wantRes, c.wantErr)
+			if res != c.wannaRes || (err != nil && err.Error() != c.wannaErr.Error()) {
+				t.Fatalf("res: %s, %v, want: %s, %v", res, err, c.wannaRes, c.wannaErr)
 			}
 		})
 	}
