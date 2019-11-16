@@ -130,6 +130,7 @@ func TestClient_Read(t *testing.T) {
 		name      string
 		req       prompb.ReadRequest
 		splunkRes string
+		bodys     []string
 		wannaRes  string
 	}{
 		{
@@ -153,16 +154,21 @@ func TestClient_Read(t *testing.T) {
 				},
 			},
 			`{}`,
+			[]string{
+				"[]",
+				`{"sid":"1"}`,
+				`{"sid":"1","entry":[{"content":{"isDone":true}}]}`,
+				`{"fields":["ropee_metric_name","ropee_metric_value","_time"],"rows":[["test","test","1970-01-01T00:00:01Z"]]}`,
+			},
 			`{"results":[{"timeseries":[{"labels":[{"name":"__name__","value":"test"}],"samples":[{"timestamp":1000}]}]}]}`,
 		},
 	}
 	for i, c := range cases {
 		t.Run(fmt.Sprintf("test-%d-%s", i, c.name), func(t *testing.T) {
-			bodyChan := make(chan string, 4)
-			bodyChan <- `[]`
-			bodyChan <- `{"sid":"1"}`
-			bodyChan <- `{"sid":"1","entry":[{"content":{"isDone":true}}]}`
-			bodyChan <- `{"fields":["ropee_metric_name","ropee_metric_value","_time"],"rows":[["test","test","1970-01-01T00:00:01Z"]]}`
+			bodyChan := make(chan string, len(c.bodys))
+			for _, s := range c.bodys {
+				bodyChan <- s
+			}
 			client := Client{
 				url: "http://test.com",
 				client: &fakeReadClient{
