@@ -223,6 +223,29 @@ func TestTimeSeriesToPromMetrics(t *testing.T) {
 			},
 		},
 		{
+			"float value - 1.23",
+			prompb.TimeSeries{
+				Labels: []prompb.Label{
+					{
+						Name:  "__name__",
+						Value: "test",
+					},
+				},
+				Samples: []prompb.Sample{
+					{
+						Value:     1.23,
+						Timestamp: 1,
+					},
+				},
+			},
+			[]SplunkMetricEvent{
+				{
+					Time:      1,
+					MetricStr: "test{} 1.23",
+				},
+			},
+		},
+		{
 			"multi values",
 			prompb.TimeSeries{
 				Labels: []prompb.Label{

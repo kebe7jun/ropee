@@ -27,20 +27,22 @@ func MakeSPL(query *prompb.Query, c RemoteClient, index string) (string, error) 
 		step = 10
 	}
 	ls := strings.Join(c.MetricLabels(metricName), " ")
-	search := "| mstats latest(_value) as " + CommonMetricValue + " where index=" + index + " AND metric_name=" + metricName + " span=" + strconv.FormatInt(step, 10) + "s by metric_name " + ls
+	search := fmt.Sprintf("| mstats latest(_value) as %s where index=%s AND metric_name=%s span=%ds by metric_name %s",
+		CommonMetricValue, index, metricName, step, ls)
 	for _, m := range query.Matchers {
 		if m.Name == "__name__" {
 			m.Name = "metric_name"
 		}
 		switch m.Type {
 		case prompb.LabelMatcher_RE:
-			search += "| regex " + m.Name + "=" + strconv.Quote(m.Value)
+			//search += fmt.Sprintf("| regex " + m.Name + "=" + strconv.Quote(m.Value))
+			search += fmt.Sprintf("| regex %s=%q", m.Name, m.Value)
 		case prompb.LabelMatcher_NRE:
-			search += "| regex " + m.Name + "!=" + strconv.Quote(m.Value)
+			search += fmt.Sprintf("| regex %s!=%q", m.Name, m.Value)
 		case prompb.LabelMatcher_EQ:
-			search += "| where " + m.Name + "=" + strconv.Quote(m.Value)
+			search += fmt.Sprintf("| where %s=%q", m.Name, m.Value)
 		case prompb.LabelMatcher_NEQ:
-			search += "| where " + m.Name + "!=" + strconv.Quote(m.Value)
+			search += fmt.Sprintf("| where %s!=%q", m.Name, m.Value)
 		}
 	}
 	search += "| rename metric_name as " + CommonMetricName
@@ -66,12 +68,12 @@ func TimeSeriesToPromMetrics(series prompb.TimeSeries) []SplunkMetricEvent {
 	if metricName == "" {
 		return nil
 	}
-	mergedKey := metricName + "{" + strings.Join(labels, ",") + "}"
+	mergedKey := fmt.Sprintf("%s{%s}", metricName, strings.Join(labels, ","))
 	for _, sample := range series.Samples {
 		valueTime := strconv.FormatFloat(sample.Value, 'f', -1, 64)
 		res = append(res, SplunkMetricEvent{
 			Time:      sample.Timestamp,
-			MetricStr: mergedKey + " " + valueTime,
+			MetricStr: fmt.Sprintf("%s %s", mergedKey, valueTime),
 		})
 	}
 	return res
