@@ -45,7 +45,7 @@ func TestMakeSPL(t *testing.T) {
 				labels: []string{"test"},
 			},
 			"test",
-			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=10s by metric_name test| where metric_name="test"| rename metric_name as ropee_metric_name`,
+			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=10s by metric_name test| rename metric_name as ropee_metric_name`,
 			nil,
 		},
 		{
@@ -68,7 +68,7 @@ func TestMakeSPL(t *testing.T) {
 				labels: []string{"test"},
 			},
 			"test",
-			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=100s by metric_name test| where metric_name="test"| rename metric_name as ropee_metric_name`,
+			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=100s by metric_name test| rename metric_name as ropee_metric_name`,
 			nil,
 		},
 		{
@@ -91,7 +91,7 @@ func TestMakeSPL(t *testing.T) {
 				labels: []string{"test", "q"},
 			},
 			"test",
-			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=10s by metric_name test q| where metric_name="test"| rename metric_name as ropee_metric_name`,
+			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=10s by metric_name test q| rename metric_name as ropee_metric_name`,
 			nil,
 		},
 		{
@@ -129,7 +129,7 @@ func TestMakeSPL(t *testing.T) {
 				labels: []string{"test1", "test2", "test3"},
 			},
 			"test",
-			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=10s by metric_name test1 test2 test3| where metric_name="test"| where test1!="test"| regex test2=".*test$"| regex test3!=".*test$"| rename metric_name as ropee_metric_name`,
+			`| mstats latest(_value) as ropee_metric_value where index=test AND metric_name=test span=10s by metric_name test1 test2 test3| where test1!="test"| regex test2=".*test$"| regex test3!=".*test$"| rename metric_name as ropee_metric_name`,
 			nil,
 		},
 		{

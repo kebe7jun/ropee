@@ -31,7 +31,7 @@ func MakeSPL(query *prompb.Query, c RemoteClient, index string) (string, error) 
 		CommonMetricValue, index, metricName, step, ls)
 	for _, m := range query.Matchers {
 		if m.Name == "__name__" {
-			m.Name = "metric_name"
+			continue
 		}
 		switch m.Type {
 		case prompb.LabelMatcher_RE:
