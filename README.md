@@ -1,6 +1,7 @@
 # Ropee -- A prometheus remote storage adapter for splunk
 
 [![Build Status](https://travis-ci.org/kebe7jun/ropee.svg)](https://travis-ci.org/kebe7jun/ropee)
+[![codecov](https://codecov.io/gh/kebe7jun/ropee/branch/master/graph/badge.svg)](https://codecov.io/gh/kebe7jun/ropee)
 [![GolangCI](https://golangci.com/badges/github.com/kebe7jun/ropee.svg)](https://golangci.com/r/github.com/kebe7jun/ropee)
 
 
