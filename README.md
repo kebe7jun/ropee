@@ -1,6 +1,6 @@
 # Ropee -- A prometheus remote storage adapter for splunk
 
-![travis](https://travis-ci.org/kebe7jun/ropee.svg)
+[![Build Status](https://travis-ci.org/kebe7jun/ropee.svg)](https://travis-ci.org/kebe7jun/ropee)
 
 
 With this remote storage adapter, Prometheus can use Splunk as a long-term store for time-series metrics.
